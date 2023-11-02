@@ -25,8 +25,8 @@ AActor* AGroundSpawner::Spawn(AActor* caller, FVector location) {
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = caller;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, location, GetActorRotation(), SpawnParams);
+    AActor* spawnedActor = World->SpawnActor<AActor>(GeneratedBP->GeneratedClass, location, GetActorRotation(), SpawnParams);
 
 
-    return nullptr;
+    return spawnedActor;
 }

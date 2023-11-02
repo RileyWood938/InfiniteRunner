@@ -14,4 +14,6 @@ class INFINITERUNNER_API AObstacleSpawner : public ASpawner
 {
 	GENERATED_BODY()
 	
+public:
+	virtual AActor* Spawn(AActor* caller, FVector location) override;
 };
