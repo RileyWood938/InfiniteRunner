@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "GameManager.h"
 #include "GroundSpawner.h"
 #include "ObstacleSpawner.h"
-#include "GameManager.h"
 
 // Sets default values
 AGameManager::AGameManager()
@@ -17,47 +17,11 @@ void AGameManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AGroundSpawner* GroundSpawner = GetWorld()->SpawnActor<AGroundSpawner>();
-	AObstacleSpawner* ObstacleSpawner = GetWorld()->SpawnActor<AObstacleSpawner>();
+	GroundSpawner = GetWorld()->SpawnActor<AGroundSpawner>();
+	ObstacleSpawner = GetWorld()->SpawnActor<AObstacleSpawner>();
 
 	for (int i = 0; i < 10; i++) {
-		FVector location = FVector(0, 1000 * groundTilesSpawned, 0);
-		AActor* groundTile = nullptr;
-		if (GroundSpawner)
-		{
-			groundTile = GroundSpawner->Spawn(this, location);
-			groundTilesSpawned++;
-			if (ObstacleSpawner) {
-				if (groundTile) {
-					TArray<UActorComponent*> GroundComponents;
-					GroundComponents = groundTile->GetComponentsByTag(UStaticMeshComponent::StaticClass(), "ground");
-
-					if (GroundComponents.Num() > 0)
-					{
-						UActorComponent* GroundComponent = GroundComponents[0];
-						USceneComponent* GroundSceneComponent = Cast<USceneComponent>(GroundComponent);
-						FTransform ComponentTransform = GroundSceneComponent->GetComponentTransform();
-						FVector Scale = ComponentTransform.GetScale3D();
-						float randomXLocation = FMath::FRandRange(-50 * Scale.X, 50 * Scale.X);
-						float randomYLocation = FMath::FRandRange(-50 * Scale.Y, 50 * Scale.Y);
-						FVector obstacleLocation(location.X + randomXLocation, location.Y+randomXLocation, location.Z);
-						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FText::AsNumber(Scale.X).ToString());
-
-						ObstacleSpawner->Spawn(groundTile, obstacleLocation);
-					}
-					//location += FVector(0, 0, groundTile->);
-				}
-				else {
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("No ground Object"));
-
-				}
-			}
-		}
-		else {
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("No groundSpawner Object"));
-
-		}
-		
+		SpawnGround();
 	}
 }
 
@@ -67,4 +31,44 @@ void AGameManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void AGameManager::SpawnGround() {
+	FVector location = FVector(0, 1000 * groundTilesSpawned, 0);
+	AActor* groundTile = nullptr;
+	if (GroundSpawner)
+	{
+		groundTile = GroundSpawner->Spawn(this, location);
+		groundTilesSpawned++;
+		if (ObstacleSpawner) {
+			if (groundTile) {
+				TArray<UActorComponent*> GroundComponents;
+				GroundComponents = groundTile->GetComponentsByTag(UStaticMeshComponent::StaticClass(), "ground");
+
+				if (GroundComponents.Num() > 0)
+				{
+					UActorComponent* GroundComponent = GroundComponents[0];
+					USceneComponent* GroundSceneComponent = Cast<USceneComponent>(GroundComponent);
+					FTransform ComponentTransform = GroundSceneComponent->GetComponentTransform();
+					FVector Scale = ComponentTransform.GetScale3D();
+					float randomXLocation = FMath::FRandRange(-50 * Scale.X, 50 * Scale.X);
+					float randomYLocation = FMath::FRandRange(-50 * Scale.Y, 50 * Scale.Y);
+					FVector obstacleLocation(location.X + randomXLocation, location.Y + randomXLocation, location.Z);
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, FText::AsNumber(Scale.X).ToString());
+
+					ObstacleSpawner->Spawn(groundTile, obstacleLocation);
+				}
+			}
+			else {
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("No ground Object"));
+
+			}
+		}
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("No groundSpawner Object"));
+
+	}
+
+}
+
 

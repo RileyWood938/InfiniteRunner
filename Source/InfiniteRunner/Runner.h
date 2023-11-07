@@ -6,10 +6,13 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Character.h"
+#include "InputActionValue.h"
 #include "Runner.generated.h"
 
+class UInputMappingContext;
 class UCameraComponent;
 class USpringArmComponent;
+class UInputAction;
 
 UCLASS()
 class INFINITERUNNER_API ARunner : public ACharacter
@@ -35,9 +38,31 @@ public:
 	USpringArmComponent* SpringArmComponent;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; 
 
-	void StartJump();
-	void MoveRight(float value);
-	void MoveLeft(float value);
+	UFUNCTION()
+	void BeginOverlap(UPrimitiveComponent* OverlappedComponent,AActor* OtherActor,UPrimitiveComponent* OtherComp,int32 OtherBodyIndex,bool bFromSweep,const FHitResult& SweepResult);
+
+protected:
+	// Expose a mapping context as a property in your header file...
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input")
+	UInputMappingContext* InputMapping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input")
+	UInputAction* TestAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input")
+	UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enhanced Input")
+	UInputAction* LookAction;
+
+	void Test(const FInputActionValue& Value);
+
+	void Move(const FInputActionValue& Value);
+
+	void Look(const FInputActionValue& Value);
+
+	UPROPERTY(EditAnywhere, Category = "Enhanced Input")
+	class AGameManager* manager;
 };
